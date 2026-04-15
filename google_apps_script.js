@@ -36,11 +36,21 @@ function doPost(e) {
   try {
     var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Sheet1");
 
-    // Parse the incoming JSON payload
-    var data = JSON.parse(e.postData.contents);
+    // Parse the incoming data
+    // Handle both form-encoded (from browser no-cors) and direct JSON
+    var data;
+    if (e.parameter && e.parameter.data) {
+      // Form-encoded: data comes as a URL parameter
+      data = JSON.parse(e.parameter.data);
+    } else if (e.postData && e.postData.contents) {
+      // Direct JSON POST
+      data = JSON.parse(e.postData.contents);
+    } else {
+      throw new Error("No data received");
+    }
 
     // Format the timestamp nicely (IST)
-    var timestamp = new Date(data.timestamp);
+    var timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
     var formattedTime = Utilities.formatDate(
       timestamp,
       "Asia/Kolkata",
