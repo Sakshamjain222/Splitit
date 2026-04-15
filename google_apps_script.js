@@ -15,9 +15,18 @@ function doPost(e) {
     var timestamp = data.timestamp ? new Date(data.timestamp) : new Date();
     var formattedTime = Utilities.formatDate(timestamp, "Asia/Kolkata", "dd-MMM-yyyy hh:mm:ss a");
 
-    // This inserts the newest order right below the headers (Row 2) every time
-    sheet.insertRowAfter(1);
-    sheet.getRange(2, 1, 1, 5).setValues([
+    // Find the very first truly empty row searching column A (Timestamp)
+    var columnValues = sheet.getRange("A:A").getValues();
+    var firstEmptyRow = 2; // Default to row 2
+    for (var i = 1; i < columnValues.length; i++) {
+      if (columnValues[i][0] === "" || columnValues[i][0] === null) {
+        firstEmptyRow = i + 1;
+        break;
+      }
+    }
+
+    // Insert the values at the first available empty row
+    sheet.getRange(firstEmptyRow, 1, 1, 5).setValues([
       [formattedTime, data.name, data.mobile, data.hostel, data.cartLink]
     ]);
 
