@@ -1,24 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Split It | Group Order Collection</title>
+    <link rel="icon" type="image/png" href="logo.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&display=swap" rel="stylesheet">
-    
+
     <style>
         :root {
-            --primary: #F8CB46; /* Blinkit Yellow */
+            --primary: #F8CB46;
+            /* Blinkit Yellow */
             --primary-hover: #F2BD1E;
-            --bg-color: #F0FDF4; /* Mint green money-saving base */
-            --text-main: #1F2937; /* Dark charcoal */
+            --bg-color: #F0FDF4;
+            /* Mint green money-saving base */
+            --text-main: #1F2937;
+            /* Dark charcoal */
             --text-secondary: #4B5563;
             --input-bg: #FFFFFF;
             --border-color: #D1D5DB;
-            --focus-glow: rgba(34, 197, 94, 0.2); /* Green focus */
-            --shadow-card: 0 16px 40px rgba(21, 128, 61, 0.08); /* Greenish soft shadow */
+            --focus-glow: rgba(34, 197, 94, 0.2);
+            /* Green focus */
+            --shadow-card: 0 16px 40px rgba(21, 128, 61, 0.08);
+            /* Greenish soft shadow */
             --shadow-input: 0 4px 12px rgba(0, 0, 0, 0.03);
             --border-radius: 14px;
         }
@@ -34,7 +41,7 @@
         body {
             background-color: var(--bg-color);
             /* Money Savings & Discounts Theme */
-            background-image: 
+            background-image:
                 radial-gradient(circle at top left, rgba(248, 203, 70, 0.15) 0%, transparent 40%),
                 radial-gradient(circle at bottom right, rgba(34, 197, 94, 0.15) 0%, transparent 40%),
                 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100' width='45' height='45'%3E%3Ctext x='50%25' y='50%25' text-anchor='middle' dominant-baseline='middle' font-family='Arial' font-size='38' fill='%2315803d' fill-opacity='0.05' font-weight='bold'%3E%25%3C/text%3E%3C/svg%3E");
@@ -189,7 +196,8 @@
             gap: 4px;
         }
 
-        .paste-btn:hover, .paste-btn:active {
+        .paste-btn:hover,
+        .paste-btn:active {
             background: rgba(34, 197, 94, 0.2);
         }
 
@@ -239,14 +247,16 @@
             display: none;
             width: 22px;
             height: 22px;
-            border: 3px solid rgba(255,255,255,0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
             border-radius: 50%;
             border-top-color: #fff;
             animation: spin 1s ease-in-out infinite;
         }
 
         @keyframes spin {
-            to { transform: rotate(360deg); }
+            to {
+                transform: rotate(360deg);
+            }
         }
 
         /* Success State */
@@ -332,16 +342,16 @@
             transition: all 0.3s ease;
             pointer-events: none;
             z-index: 100;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         .status-toast.show {
             transform: translateX(-50%) translateY(0);
             opacity: 1;
         }
-
     </style>
 </head>
+
 <body>
 
     <div class="container">
@@ -349,11 +359,17 @@
         <div id="formView">
             <div class="logo-container">
                 <!-- Shopping Bag Fallback SVG if logo.png is missing -->
-                <img src="logo.png" alt="Split It Logo" class="logo-img" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F8CB46\'/><path d=\'M30 40 V35 A20 20 0 0 1 70 35 V40 H80 L75 80 H25 L30 40 Z\' fill=\'none\' stroke=\'%232D2D2D\' stroke-width=\'6\' stroke-linejoin=\'round\' stroke-linecap=\'round\'/></svg>'">
+                <img src="logo.png" alt="Split It Logo" class="logo-img"
+                    onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'50\' fill=\'%23F8CB46\'/><path d=\'M30 40 V35 A20 20 0 0 1 70 35 V40 H80 L75 80 H25 L30 40 Z\' fill=\'none\' stroke=\'%232D2D2D\' stroke-width=\'6\' stroke-linejoin=\'round\' stroke-linecap=\'round\'/></svg>'">
                 <h1 class="title">
                     Split It
                     <!-- Small cart icon next to title -->
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)"
+                        stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="9" cy="21" r="1"></circle>
+                        <circle cx="20" cy="21" r="1"></circle>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
                 </h1>
                 <p class="subtitle">Share the cart & save on delivery! 💸</p>
             </div>
@@ -363,9 +379,14 @@
                     <label for="fullName" class="form-label">Shopper Name</label>
                     <div class="input-wrapper">
                         <div class="input-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="12" cy="7" r="4"></circle>
+                            </svg>
                         </div>
-                        <input type="text" id="fullName" class="form-control" required placeholder="e.g. ABC" autocomplete="name">
+                        <input type="text" id="fullName" class="form-control" required placeholder="e.g. ABC"
+                            autocomplete="name">
                     </div>
                 </div>
 
@@ -373,30 +394,44 @@
                     <label for="mobile" class="form-label">Mobile Number</label>
                     <div class="input-wrapper">
                         <div class="input-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                                </path>
+                            </svg>
                         </div>
                         <span class="phone-prefix">+91</span>
-                        <input type="tel" id="mobile" class="form-control" required pattern="[0-9]{10}" placeholder="96641 12031" autocomplete="tel-national" maxlength="10">
+                        <input type="tel" id="mobile" class="form-control" required pattern="[0-9]{10}"
+                            placeholder="XXXXXXXXXX" autocomplete="tel-national" maxlength="10">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label class="form-label">Delivery Location</label>
                     <div class="delivery-options" style="display: flex; gap: 16px; margin-bottom: 8px;">
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; font-size: 15px;">
-                            <input type="radio" name="deliveryType" value="Main Gate" required style="accent-color: var(--primary); width: 18px; height: 18px;">
+                        <label
+                            style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; font-size: 15px;">
+                            <input type="radio" name="deliveryType" value="Main Gate" required
+                                style="accent-color: var(--primary); width: 18px; height: 18px;">
                             Main Gate
                         </label>
-                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; font-size: 15px;">
-                            <input type="radio" name="deliveryType" value="Hostel" required style="accent-color: var(--primary); width: 18px; height: 18px;">
+                        <label
+                            style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: 600; font-size: 15px;">
+                            <input type="radio" name="deliveryType" value="Hostel" required
+                                style="accent-color: var(--primary); width: 18px; height: 18px;">
                             Hostel
                         </label>
                     </div>
-                    
+
                     <div id="hostelContainer" style="display: none; margin-top: 12px;">
                         <div class="input-wrapper">
                             <div class="input-icon">
-                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
                             </div>
                             <select id="hostel" class="form-control">
                                 <option value="" disabled selected>Select your hostel</option>
@@ -416,12 +451,16 @@
                         </div>
                     </div>
                     <!-- Delivery Note Info Box -->
-                    <div style="background-color: #FFF9E6; border-left: 4px solid var(--primary); padding: 12px; margin-top: 16px; border-radius: 8px; font-size: 13px; color: #5A4A1E; line-height: 1.5; font-weight: 600;">
-                        <p style="margin-bottom: 8px;"><strong>⚠️ Pre-payment is required</strong> for all orders (orders will be processed only after payment is confirmed).</p>
+                    <div
+                        style="background-color: #FFF9E6; border-left: 4px solid var(--primary); padding: 12px; margin-top: 16px; border-radius: 8px; font-size: 13px; color: #5A4A1E; line-height: 1.5; font-weight: 600;">
+                        <p style="margin-bottom: 8px;"><strong>⚠️ Pre-payment is required</strong> for all orders
+                            (orders will be processed only after payment is confirmed).</p>
                         <p style="margin-bottom: 4px; font-weight: 800;">Service Charges:</p>
                         <ul style="list-style: none; padding-left: 0; margin: 0;">
-                            <li style="margin-bottom: 4px;">📍 <strong>Gate Pickup:</strong> ₹7 convenience fee (any cart value).</li>
-                            <li>🏢 <strong>Hostel Delivery:</strong> additional ₹10 convenience fee (delivered to your hostel).</li>
+                            <li style="margin-bottom: 4px;">📍 <strong>Gate Pickup:</strong> ₹7 convenience fee (any
+                                cart value).</li>
+                            <li>🏢 <strong>Hostel Delivery:</strong> additional ₹10 convenience fee (delivered to your
+                                hostel).</li>
                         </ul>
                     </div>
                 </div>
@@ -430,11 +469,21 @@
                     <label for="cartLink" class="form-label">Your Shared Cart Link</label>
                     <div class="input-wrapper">
                         <div class="input-icon">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
+                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
+                            </svg>
                         </div>
-                        <input type="url" id="cartLink" class="form-control" required placeholder="Paste Blinkit Cart URL">
+                        <input type="url" id="cartLink" class="form-control" required
+                            placeholder="Paste Blinkit Cart URL">
                         <button type="button" id="pasteBtn" class="paste-btn" title="Paste from clipboard">
-                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path><rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect></svg>
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                </path>
+                                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -442,7 +491,12 @@
 
 
                 <button type="submit" id="submitBtn" class="submit-btn" aria-label="Add to Group Cart">
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
                     <span id="submitText">Check out via WhatsApp</span>
                     <div class="spinner" id="submitSpinner"></div>
                 </button>
@@ -452,19 +506,27 @@
         <!-- Success View -->
         <div id="successView" class="success-screen">
             <div class="success-icon">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
             </div>
             <h2 class="success-title">Item Added!</h2>
             <p class="success-text">Check WhatsApp to finalize your order items with the group.</p>
             <button class="btn-outline" id="resetBtn">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
                 Add Another Link
             </button>
         </div>
     </div>
 
     <!-- Footer -->
-    <div style="margin-top: 24px; text-align: center; color: var(--text-secondary); font-size: 14px; font-weight: 800; letter-spacing: 0.5px; opacity: 0.8;">
+    <div
+        style="margin-top: 24px; text-align: center; color: var(--text-secondary); font-size: 14px; font-weight: 800; letter-spacing: 0.5px; opacity: 0.8;">
         Save money with Split It.<br> Split It × Team Air Wave
     </div>
 
@@ -476,7 +538,7 @@
         // CONFIGURATION VARIABLES
         // ==========================================
         const ORGANIZER_PHONE = "919664112031"; // Organizer's phone number
-        
+
         // --- Google Apps Script Web App URL ---
         // Target Google Sheet: https://docs.google.com/spreadsheets/d/1GeymkP4E4MMMHezmmmrdff_glKrcrOcoGsJCwIbAERY/edit?gid=0#gid=0
         // IMPORTANT: Replace the URL below with your DEPLOYED Apps Script Web App URL (not the sheet link above!)
@@ -496,7 +558,7 @@
         const pasteBtn = document.getElementById('pasteBtn');
         const cartLinkInput = document.getElementById('cartLink');
         const statusToast = document.getElementById('statusToast');
-        
+
 
 
         // ==========================================
@@ -573,11 +635,11 @@
 
             const name = document.getElementById('fullName').value.trim();
             const mobile = document.getElementById('mobile').value.trim();
-            
+
             const deliveryType = document.querySelector('input[name="deliveryType"]:checked').value;
             const hostelVal = document.getElementById('hostel').value;
             const finalLocation = deliveryType === "Hostel" ? hostelVal : "Main Gate";
-            
+
             const cartLink = document.getElementById('cartLink').value.trim();
             const timestamp = new Date().toISOString();
 
@@ -592,7 +654,7 @@
                     // This avoids CORS issues with Google Apps Script
                     const formData = new URLSearchParams();
                     formData.append("data", JSON.stringify(orderData));
-                    
+
                     await fetch(SHEET_URL, {
                         method: "POST",
                         mode: "no-cors",
@@ -603,7 +665,7 @@
                     console.warn("No Backend Configured. Proceeding to WhatsApp Only.");
                 }
 
-                const whatsappUrl = `https://wa.me/${ORGANIZER_PHONE}?text=` + 
+                const whatsappUrl = `https://wa.me/${ORGANIZER_PHONE}?text=` +
                     `%F0%9F%9B%92 *BLINKIT CART POOL* %F0%9F%9B%92%0A%0A` +
                     `%F0%9F%91%A4 *Shopper:* ${encodeURIComponent(name)}%0A%0A` +
                     `%F0%9F%93%9E *Mobile:* ${encodeURIComponent('+91 ' + mobile)}%0A%0A` +
@@ -621,8 +683,8 @@
             } catch (error) {
                 console.error("Error saving data:", error);
                 showToast("Error updating records. Sending via WhatsApp anyway.");
-                
-                const whatsappUrl = `https://wa.me/${ORGANIZER_PHONE}?text=` + 
+
+                const whatsappUrl = `https://wa.me/${ORGANIZER_PHONE}?text=` +
                     `%F0%9F%9B%92 *BLINKIT CART POOL* %F0%9F%9B%92%0A%0A` +
                     `%F0%9F%91%A4 *Shopper:* ${encodeURIComponent(name)}%0A%0A` +
                     `%F0%9F%93%9E *Mobile:* ${encodeURIComponent('+91 ' + mobile)}%0A%0A` +
@@ -630,8 +692,8 @@
                     `%F0%9F%9B%8D%EF%B8%8F *Cart Link:*%0A${encodeURIComponent(cartLink)}%0A%0A` +
                     `%E2%9A%A1 _Sent via SplitIt_`;
                 window.open(whatsappUrl, '_blank');
-                
-                
+
+
                 setButtonLoading(false);
                 showSuccess();
             }
@@ -639,4 +701,5 @@
 
     </script>
 </body>
+
 </html>
