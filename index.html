@@ -457,9 +457,9 @@
                             (orders will be processed only after payment is confirmed).</p>
                         <p style="margin-bottom: 4px; font-weight: 800;">Service Charges:</p>
                         <ul style="list-style: none; padding-left: 0; margin: 0;">
-                            <li style="margin-bottom: 4px;">📍 <strong>Gate Pickup:</strong> ₹7 convenience fee (any
+                            <li style="margin-bottom: 4px;">📍 <strong>Gate Pickup:</strong> ₹<span id="gatePrice">7</span> convenience fee (any
                                 cart value).</li>
-                            <li>🏢 <strong>Hostel Delivery:</strong> additional ₹10 convenience fee (delivered to your
+                            <li>🏢 <strong>Hostel Delivery:</strong> additional ₹<span id="hostelPrice">10</span> convenience fee (delivered to your
                                 hostel).</li>
                         </ul>
                     </div>
@@ -538,6 +538,20 @@
         // CONFIGURATION VARIABLES
         // ==========================================
         const ORGANIZER_PHONE = "919664112031"; // Organizer's phone number
+
+        // ==========================================
+        // DYNAMIC PRICING (Time-based)
+        // ==========================================
+        // Day prices (6 AM - 11:59 PM): Gate ₹7, Hostel ₹10
+        // Night prices (12 AM - 5:59 AM): Gate ₹9, Hostel ₹15
+        function updatePricing() {
+            const hour = new Date().getHours(); // 0-23
+            const isNight = hour >= 0 && hour < 6; // 12 AM to 5:59 AM
+            document.getElementById('gatePrice').textContent = isNight ? '9' : '7';
+            document.getElementById('hostelPrice').textContent = isNight ? '15' : '10';
+        }
+        updatePricing(); // Run on page load
+        setInterval(updatePricing, 60000); // Re-check every minute
 
         // --- Google Apps Script Web App URL ---
         // Target Google Sheet: https://docs.google.com/spreadsheets/d/1GeymkP4E4MMMHezmmmrdff_glKrcrOcoGsJCwIbAERY/edit?gid=0#gid=0
