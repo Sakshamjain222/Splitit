@@ -654,13 +654,24 @@
         // EVENT LISTENERS
         // ==========================================
 
+        function extractUrl(text) {
+            const urlRegex = /(https?:\/\/[^\s]+)/gi;
+            const matches = text.match(urlRegex);
+            return matches ? matches[0] : text;
+        }
 
+        cartLinkInput.addEventListener('input', (e) => {
+            const extracted = extractUrl(e.target.value);
+            if (extracted !== e.target.value) {
+                e.target.value = extracted;
+            }
+        });
 
         pasteBtn.addEventListener('click', async () => {
             try {
                 const text = await navigator.clipboard.readText();
                 if (text) {
-                    cartLinkInput.value = text;
+                    cartLinkInput.value = extractUrl(text);
                     cartLinkInput.focus();
                 }
             } catch (err) {
