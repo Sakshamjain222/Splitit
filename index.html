@@ -660,10 +660,12 @@
             return matches ? matches[0] : text;
         }
 
-        cartLinkInput.addEventListener('input', (e) => {
-            const extracted = extractUrl(e.target.value);
-            if (extracted !== e.target.value) {
-                e.target.value = extracted;
+        cartLinkInput.addEventListener('paste', (e) => {
+            const pasteData = (e.clipboardData || window.clipboardData).getData('text');
+            const extracted = extractUrl(pasteData);
+            if (extracted && extracted !== pasteData) {
+                e.preventDefault();
+                cartLinkInput.value = extracted;
             }
         });
 
