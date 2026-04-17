@@ -752,7 +752,7 @@
                 showSuccess();
 
                 setTimeout(() => {
-                    window.open(whatsappUrl, '_blank');
+                    window.location.href = whatsappUrl;
                 }, 800);
 
             } catch (error) {
@@ -766,7 +766,7 @@
                     `%F0%9F%93%8D *Delivery:* ${encodeURIComponent(finalLocation)}%0A%0A` +
                     `%F0%9F%9B%8D%EF%B8%8F *Cart Link:*%0A${encodeURIComponent(cartLink)}%0A%0A` +
                     `%E2%9A%A1 _Sent via SplitIt_`;
-                window.open(whatsappUrl, '_blank');
+                window.location.href = whatsappUrl;
 
 
                 setButtonLoading(false);
