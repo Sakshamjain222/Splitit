@@ -518,7 +518,7 @@
                                 <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
                             </svg>
                         </div>
-                        <input type="url" id="cartLink" class="form-control" required
+                        <input type="text" inputmode="url" id="cartLink" class="form-control" required
                             placeholder="Paste Blinkit Cart URL">
                         <button type="button" id="pasteBtn" class="paste-btn" title="Paste from clipboard">
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -666,6 +666,14 @@
             if (extracted && extracted !== pasteData) {
                 e.preventDefault();
                 cartLinkInput.value = extracted;
+            }
+        });
+
+        // Failsafe if paste event is bypassed
+        cartLinkInput.addEventListener('input', (e) => {
+            const extracted = extractUrl(e.target.value);
+            if (extracted !== e.target.value) {
+                e.target.value = extracted;
             }
         });
 
