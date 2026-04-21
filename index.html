@@ -460,6 +460,17 @@
                 <p class="subtitle">Share the cart & save on delivery! 💸</p>
             </div>
 
+            <!-- Dynamic Countdown Timer -->
+            <div id="timerBanner" style="display: none; margin-bottom: 24px; text-align: center;">
+                <div id="timerInner" style="display: inline-flex; align-items: center; justify-content: center; gap: 8px; background: #FFF9E6; border: 2px solid var(--primary); color: var(--text-main); padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 14px; box-shadow: var(--shadow-input); animation: pulse 2.5s infinite;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Closing in <span id="countdownText" style="color: #D97706; font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums;">--:--</span></span>
+                </div>
+            </div>
+
             <form id="splitForm">
                 <div class="form-group">
                     <label for="fullName" class="form-label">Shopper Name</label>
@@ -825,6 +836,77 @@
                 showSuccess();
             }
         });
+
+        // ==========================================
+        // DYNAMIC CART CLOSING TIMER (Secure API)
+        // ==========================================
+        
+        async function fetchTimer() {
+            try {
+                // Fetching securely from our custom backend
+                const response = await fetch('/api/timer');
+                const data = await response.json();
+                
+                if (data.status === 'active' && data.time) {
+                    startCountdown(data.time);
+                } else {
+                    const timerBanner = document.getElementById('timerBanner');
+                    if(timerBanner) timerBanner.style.display = 'none';
+                    if(countdownInterval) clearInterval(countdownInterval);
+                }
+            } catch (e) {
+                console.error("Could not fetch timer data. Ensure the secure server is running.", e);
+            }
+        }
+
+        let countdownInterval;
+        function startCountdown(timeStr) {
+            const timeParts = timeStr.split(':');
+            if (timeParts.length < 2) return;
+            
+            const hours = parseInt(timeParts[0], 10);
+            const minutes = parseInt(timeParts[1], 10);
+            
+            const timerBanner = document.getElementById('timerBanner');
+            const countdownText = document.getElementById('countdownText');
+
+            if (countdownInterval) clearInterval(countdownInterval);
+
+            countdownInterval = setInterval(() => {
+                const now = new Date();
+                const target = new Date();
+                target.setHours(hours, minutes, 0, 0);
+                
+                const diff = target - now;
+                
+                if (diff <= 0) {
+                    clearInterval(countdownInterval);
+                    countdownText.textContent = "Orders Closed!";
+                    const timerInner = document.getElementById('timerInner');
+                    if (timerInner) {
+                        timerInner.style.animation = "none";
+                        timerInner.style.background = "#E5E7EB"; // Light grey
+                        timerInner.style.borderColor = "#9CA3AF";
+                        timerInner.style.color = "#4B5563";
+                    }
+                } else {
+                    const h = Math.floor(diff / (1000 * 60 * 60));
+                    const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const s = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    let timeDisplay = "";
+                    if (h > 0) timeDisplay += `${h}h `;
+                    timeDisplay += `${m}m ${s}s`;
+                    
+                    countdownText.textContent = timeDisplay;
+                    timerBanner.style.display = 'block';
+                }
+            }, 1000);
+        }
+        
+        
+        fetchTimer();
+        setInterval(fetchTimer, 5000); // Poll every 5 seconds to stay updated
 
     </script>
 </body>
