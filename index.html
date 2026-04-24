@@ -467,7 +467,7 @@
                         <circle cx="12" cy="12" r="10"></circle>
                         <polyline points="12 6 12 12 16 14"></polyline>
                     </svg>
-                    <span>Closing in <span id="countdownText" style="color: #D97706; font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums;">--:--</span></span>
+                    <span><span id="timerPrefixText"> Cart closing in </span><span id="countdownText" style="color: #D97706; font-size: 15px; font-weight: 800; font-variant-numeric: tabular-nums;">--:--</span></span>
                 </div>
             </div>
 
@@ -841,10 +841,10 @@
         // DYNAMIC CART CLOSING TIMER (Secure API)
         // ==========================================
         
-        async function fetchTimer() {
+        async function fetchTimer() { 
             try {
-                // Fetching securely from our custom backend
-                const response = await fetch('/api/timer');
+                // Fetching securely from our custom backend (no-store prevents browser caching)
+                const response = await fetch('/api/timer', { cache: 'no-store' });
                 const data = await response.json();
                 
                 if (data.status === 'active' && data.time) {
@@ -872,7 +872,7 @@
 
             if (countdownInterval) clearInterval(countdownInterval);
 
-            countdownInterval = setInterval(() => {
+            const updateTimer = () => {
                 const now = new Date();
                 const target = new Date();
                 target.setHours(hours, minutes, 0, 0);
@@ -881,7 +881,9 @@
                 
                 if (diff <= 0) {
                     clearInterval(countdownInterval);
-                    countdownText.textContent = "Orders Closed!";
+                    countdownText.textContent = "Cart closed!";
+                    const prefix = document.getElementById('timerPrefixText');
+                    if (prefix) prefix.style.display = 'none';
                     const timerInner = document.getElementById('timerInner');
                     if (timerInner) {
                         timerInner.style.animation = "none";
@@ -890,6 +892,8 @@
                         timerInner.style.color = "#4B5563";
                     }
                 } else {
+                    const prefix = document.getElementById('timerPrefixText');
+                    if (prefix) prefix.style.display = 'inline';
                     const h = Math.floor(diff / (1000 * 60 * 60));
                     const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
                     const s = Math.floor((diff % (1000 * 60)) / 1000);
@@ -901,7 +905,11 @@
                     countdownText.textContent = timeDisplay;
                     timerBanner.style.display = 'block';
                 }
-            }, 1000);
+            };
+
+            // Call immediately so it shows up instantly without waiting 1 second
+            updateTimer(); 
+            countdownInterval = setInterval(updateTimer, 1000);
         }
         
         
