@@ -21,12 +21,13 @@
         }
         .container { 
             width: 100%;
-            max-width: 360px; 
+            max-width: 440px; 
             background: white; 
             padding: 32px 24px; 
             border-radius: 20px; 
             box-shadow: 0 16px 40px rgba(21, 128, 61, 0.08);
             border-top: 6px solid #F8CB46; 
+            margin: 20px 0;
         }
         h2 { margin-top: 0; font-weight: 800; font-size: 24px; }
         p { color: #4B5563; font-weight: 600; font-size: 14px; margin-bottom: 24px; }
@@ -62,8 +63,14 @@
             transition: all 0.2s ease;
         }
         button:hover { background: #166534; transform: translateY(-2px); }
+        .btn-secondary { background: #4B5563; }
+        .btn-secondary:hover { background: #374151; }
+        .btn-danger { background: #DC2626; margin-top: 8px; }
+        .btn-danger:hover { background: #B91C1C; }
         
         #statusMsg { margin-top: 16px; font-weight: 800; color: #15803D; display: none; }
+        .divider { height: 2px; background: #E5E7EB; margin: 28px 0; }
+        .student-item { display: flex; justify-content: space-between; align-items: center; background: #F9FAFB; padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #E5E7EB; font-size: 14px; text-align: left; }
     </style>
 </head>
 <body>
@@ -80,7 +87,7 @@
         <button onclick="login()">Login</button>
     </div>
 
-    <!-- Timer Control Screen -->
+    <!-- Timer & Student Control Screen -->
     <div class="container" id="adminView" style="display: none;">
         <h2>Timer Control ⏱️</h2>
         <p>Set the global countdown timer for all users.</p>
@@ -100,10 +107,36 @@
 
         <button onclick="saveTimer()">Save & Update Site</button>
         <div id="statusMsg"></div>
+
+        <div class="divider"></div>
+
+        <h2>Set Student Progress 🎯</h2>
+        <p>Verified cart amount set here controls each student's personal meter on index.html.</p>
+
+        <div class="form-group">
+            <label>Student Mobile Number (10 Digits)</label>
+            <input type="tel" id="studentMobile" placeholder="e.g. 9876543210" maxlength="10">
+        </div>
+
+        <div class="form-group">
+            <label>Student Name (Optional)</label>
+            <input type="text" id="studentName" placeholder="e.g. Aarav">
+        </div>
+
+        <div class="form-group">
+            <label>Verified Cart / Cumulative Spend (₹)</label>
+            <input type="number" id="studentSpend" placeholder="e.g. 520 (Turns Gold at 500!)">
+        </div>
+
+        <button class="btn-secondary" onclick="saveStudentProgress()">Save Student Meter</button>
+        <button class="btn-danger" onclick="resetAllStudents()">🔄 Reset All Student Meters to ₹0</button>
+
+        <div id="studentsList" style="margin-top: 20px;"></div>
     </div>
 
     <script>
         let adminPassword = null;
+        let currentStudentProgress = {};
 
         function login() {
             const pass = document.getElementById('adminPass').value;
@@ -114,6 +147,42 @@
             adminPassword = pass;
             document.getElementById('loginView').style.display = 'none';
             document.getElementById('adminView').style.display = 'block';
+            loadCurrentData();
+        }
+
+        async function loadCurrentData() {
+            try {
+                const res = await fetch('/api/timer');
+                const data = await res.json();
+                if(data.status) document.getElementById('status').value = data.status;
+                if(data.time) document.getElementById('timeInput').value = data.time;
+                currentStudentProgress = data.studentProgress || {};
+                renderStudentsList();
+            } catch(e) {
+                console.error("Failed to load existing data");
+            }
+        }
+
+        function renderStudentsList() {
+            const container = document.getElementById('studentsList');
+            container.innerHTML = '<label style="display:block; margin-bottom: 8px;">Active Student Meters</label>';
+            const keys = Object.keys(currentStudentProgress);
+            if(keys.length === 0) {
+                container.innerHTML += '<p style="font-size:13px; color:#6B7280; font-weight:normal;">No individual meters set right now.</p>';
+                return;
+            }
+            keys.forEach(mobile => {
+                const item = currentStudentProgress[mobile];
+                container.innerHTML += `
+                    <div class="student-item">
+                        <div>
+                            <strong>${item.name || 'Student'} (${mobile})</strong><br>
+                            <span style="color:#15803D; font-weight:800;">₹${item.spend} / ₹500</span>
+                        </div>
+                        <button style="width:auto; padding:6px 12px; margin:0; background:#DC2626; font-size:12px;" onclick="removeStudent('${mobile}')">Remove</button>
+                    </div>
+                `;
+            });
         }
 
         async function saveTimer() {
@@ -132,7 +201,7 @@
                         'Content-Type': 'application/json',
                         'Authorization': adminPassword
                     },
-                    body: JSON.stringify({ status: status, time: time })
+                    body: JSON.stringify({ status: status, time: time, studentProgress: currentStudentProgress })
                 });
                 
                 const data = await response.json();
@@ -143,7 +212,6 @@
                     msgBox.style.color = "#DC2626";
                     msgBox.innerText = "❌ Security Error: " + (data.error || "Request blocked.");
                     
-                    // If wrong password, go back to login
                     if(response.status === 401) {
                         setTimeout(() => {
                             document.getElementById('loginView').style.display = 'block';
@@ -156,6 +224,38 @@
             } catch(e) {
                 msgBox.style.color = "#DC2626";
                 msgBox.innerText = "❌ Network error. Connection to backend failed.";
+            }
+        }
+
+        async function saveStudentProgress() {
+            const mobile = document.getElementById('studentMobile').value.trim();
+            const name = document.getElementById('studentName').value.trim();
+            const spend = Number(document.getElementById('studentSpend').value.trim());
+
+            if(!mobile || mobile.length < 10 || isNaN(spend)) {
+                alert("Please enter a valid 10-digit mobile number and amount.");
+                return;
+            }
+
+            currentStudentProgress[mobile] = { name: name || 'Student', spend: spend, updated: Date.now() };
+            document.getElementById('studentMobile').value = '';
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentSpend').value = '';
+            renderStudentsList();
+            await saveTimer();
+        }
+
+        async function removeStudent(mobile) {
+            delete currentStudentProgress[mobile];
+            renderStudentsList();
+            await saveTimer();
+        }
+
+        async function resetAllStudents() {
+            if(confirm("Are you sure you want to reset all individual student meters to ₹0?")) {
+                currentStudentProgress = {};
+                renderStudentsList();
+                await saveTimer();
             }
         }
     </script>

@@ -15,15 +15,13 @@ module.exports = async function handler(req, res) {
     // Determine storage engine: Use GitHub Gist if configured, otherwise fallback to JSONBin
     const useGist = Boolean(GITHUB_GIST_ID && GITHUB_TOKEN);
 
-    // Handle GET Request (Fetch Timer for frontend index.html)
-    if (req.method === 'GET') {
+    // Helper function to read current data from storage
+    async function getStorageData() {
         if (!useGist && !JSONBIN_ID) {
-            return res.status(200).json({ status: 'off', time: '' });
+            return { status: 'off', time: '', studentProgress: {} };
         }
-        
         try {
             if (useGist) {
-                // Read from GitHub Gist
                 const response = await fetch(`https://api.github.com/gists/${GITHUB_GIST_ID}`, {
                     headers: {
                         'Authorization': `Bearer ${GITHUB_TOKEN}`,
@@ -35,54 +33,57 @@ module.exports = async function handler(req, res) {
                     throw new Error(`GitHub Gist Fetch Error (${response.status}): ${errText}`);
                 }
                 const data = await response.json();
-                const fileContent = data.files && data.files['timer.json'] ? data.files['timer.json'].content : '{"status":"off","time":""}';
-                return res.status(200).json(JSON.parse(fileContent));
+                const fileContent = data.files && data.files['timer.json'] ? data.files['timer.json'].content : '{"status":"off","time":"","studentProgress":{}}';
+                const parsed = JSON.parse(fileContent);
+                return { status: parsed.status || 'off', time: parsed.time || '', studentProgress: parsed.studentProgress || {} };
             } else {
-                // Read from JSONBin.io
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}/latest`, {
-                    headers: { 
-                        'X-Master-Key': JSONBIN_KEY
-                    }
+                    headers: { 'X-Master-Key': JSONBIN_KEY }
                 });
                 if (!response.ok) {
                     const errText = await response.text();
                     throw new Error(`JSONBin Fetch Error (${response.status}): ${errText}`);
                 }
-                
                 const data = await response.json();
-                return res.status(200).json(data.record);
+                const parsed = data.record || {};
+                return { status: parsed.status || 'off', time: parsed.time || '', studentProgress: parsed.studentProgress || {} };
             }
         } catch (error) {
-            console.error("Timer Fetch Error:", error.message || error);
-            return res.status(200).json({ status: 'off', time: '' });
+            console.error("Storage Fetch Error:", error.message || error);
+            return { status: 'off', time: '', studentProgress: {} };
         }
     }
 
-    // Handle POST Request (Update Timer from admin.html)
+    // Handle GET Request (Fetch Timer & Student Progress for frontend)
+    if (req.method === 'GET') {
+        const data = await getStorageData();
+        return res.status(200).json(data);
+    }
+
+    // Handle POST Request (Update Timer or Student Progress from admin.html)
     if (req.method === 'POST') {
         const providedPassword = req.headers['authorization'];
         
-        // Security: Prevent unauthorized access (Defends against unauthorized writes)
+        // Security: Prevent unauthorized access
         if (providedPassword !== ADMIN_PASSWORD) {
             return res.status(401).json({ error: "Unauthorized. Wrong password." });
         }
 
-        const { status, time } = req.body;
-        
-        // Security: Input Validation (Defends against Injection/XSS)
-        if (!['active', 'off'].includes(status)) {
-            return res.status(400).json({ error: "Invalid status format." });
-        }
-        
         if (!useGist && (!JSONBIN_ID || !JSONBIN_KEY)) {
             return res.status(500).json({ 
                 error: "Storage not configured. Add GITHUB_GIST_ID & GITHUB_TOKEN (or JSONBIN_ID & JSONBIN_KEY) to Vercel environment variables." 
             });
         }
 
+        const currentData = await getStorageData();
+        const payload = {
+            status: req.body.status !== undefined ? req.body.status : currentData.status,
+            time: req.body.time !== undefined ? req.body.time : currentData.time,
+            studentProgress: req.body.studentProgress !== undefined ? req.body.studentProgress : currentData.studentProgress
+        };
+
         try {
             if (useGist) {
-                // Update GitHub Gist
                 const response = await fetch(`https://api.github.com/gists/${GITHUB_GIST_ID}`, {
                     method: 'PATCH',
                     headers: {
@@ -93,7 +94,7 @@ module.exports = async function handler(req, res) {
                     body: JSON.stringify({
                         files: {
                             "timer.json": {
-                                content: JSON.stringify({ status, time })
+                                content: JSON.stringify(payload)
                             }
                         }
                     })
@@ -103,16 +104,15 @@ module.exports = async function handler(req, res) {
                     const errText = await response.text();
                     throw new Error(`GitHub Gist Update Error (${response.status}): ${errText}`);
                 }
-                return res.status(200).json({ success: true, message: "Timer updated securely on GitHub Gist" });
+                return res.status(200).json({ success: true, message: "Storage updated securely on GitHub Gist", data: payload });
             } else {
-                // Update JSONBin.io
                 const response = await fetch(`https://api.jsonbin.io/v3/b/${JSONBIN_ID}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-Master-Key': JSONBIN_KEY
                     },
-                    body: JSON.stringify({ status, time })
+                    body: JSON.stringify(payload)
                 });
                 
                 if (!response.ok) {
@@ -120,11 +120,11 @@ module.exports = async function handler(req, res) {
                     throw new Error(`JSONBin Update Error (${response.status}): ${errText}`);
                 }
                 
-                return res.status(200).json({ success: true, message: "Timer updated securely on JSONBin" });
+                return res.status(200).json({ success: true, message: "Storage updated securely on JSONBin", data: payload });
             }
         } catch (error) {
-            console.error("Timer Update Error:", error.message || error);
-            return res.status(500).json({ error: error.message || "Failed to save timer" });
+            console.error("Storage Update Error:", error.message || error);
+            return res.status(500).json({ error: error.message || "Failed to save data" });
         }
     }
 
