@@ -80,6 +80,20 @@ const server = http.createServer((req, res) => {
 
     // --- SECURE API ROUTES ---
 
+    if (req.url.startsWith('/api/timer')) {
+        res.status = (code) => { res.statusCode = code; return res; };
+        res.json = (data) => { res.setHeader('Content-Type', 'application/json'); res.end(JSON.stringify(data)); };
+        
+        if (req.method === 'GET') {
+            return require('./api/timer.js')(req, res);
+        } else {
+            return parseBody(body => {
+                req.body = body;
+                require('./api/timer.js')(req, res);
+            });
+        }
+    }
+
     if (req.method === 'POST' && req.url === '/api/login') {
         if (!checkRateLimit(ip)) {
             return sendJson(429, { error: "Security Alert: Too many failed attempts. Try again in 5 minutes." });

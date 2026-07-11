@@ -70,7 +70,18 @@
         
         #statusMsg { margin-top: 16px; font-weight: 800; color: #15803D; display: none; }
         .divider { height: 2px; background: #E5E7EB; margin: 28px 0; }
-        .student-item { display: flex; justify-content: space-between; align-items: center; background: #F9FAFB; padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #E5E7EB; font-size: 14px; text-align: left; }
+        .student-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: #F9FAFB; padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #E5E7EB; font-size: 14px; text-align: left; }
+
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .container { padding: 24px 16px; border-radius: 16px; width: 100%; }
+            h2 { font-size: 20px; }
+            .student-item { flex-direction: column; align-items: flex-start; }
+            input, select, button { font-size: 16px !important; }
+        }
+        @media (min-width: 768px) {
+            .container { max-width: 480px; padding: 36px 30px; }
+        }
     </style>
 </head>
 <body>

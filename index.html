@@ -459,6 +459,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
             margin-bottom: 10px;
             font-size: 14px;
             font-weight: 800;
@@ -518,6 +520,74 @@
             color: #4B5563;
             font-size: 12.5px;
             font-weight: 700;
+        }
+
+        /* ==========================================
+           UNIVERSAL RESPONSIVE DISPLAY STYLES
+        ========================================== */
+        @media (max-width: 480px) {
+            body {
+                padding: 12px;
+            }
+            .container {
+                padding: 22px 16px;
+                border-radius: 16px;
+                max-width: 100%;
+            }
+            .title {
+                font-size: 22px;
+            }
+            .subtitle {
+                font-size: 13.5px;
+            }
+            .meter-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 4px;
+            }
+            .meter-spend-text {
+                font-size: 14px;
+            }
+            .form-control {
+                font-size: 16px !important; /* Prevents iOS auto-zoom on input focus */
+            }
+            .submit-btn {
+                padding: 15px;
+                font-size: 16px;
+            }
+            .whatsapp-fab {
+                bottom: 16px;
+                right: 16px;
+                padding: 10px 14px;
+                z-index: 999;
+            }
+            .whatsapp-fab .fab-text {
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 360px) {
+            .container {
+                padding: 18px 12px;
+            }
+            .title {
+                font-size: 20px;
+            }
+            .delivery-options {
+                flex-direction: column;
+                gap: 10px !important;
+            }
+            .paste-btn {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                max-width: 480px;
+                padding: 36px 30px;
+            }
         }
     </style>
 </head>
@@ -694,7 +764,21 @@
                     </div>
                 </div>
 
-
+                <div class="form-group" id="cartValueGroup" style="display: none; background: #FFFBEB; border: 2px dashed #F59E0B; padding: 14px; border-radius: 14px; margin-bottom: 20px;">
+                    <label for="cartValue" class="form-label" style="color: #B45309; font-weight: 800; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 6px;">
+                        <span>Today's Cart Value (₹)</span>
+                        <span style="font-size: 11px; background: #FEF3C7; color: #D97706; padding: 2px 8px; border-radius: 50px;">⚡ Live Meter Boost</span>
+                    </label>
+                    <div class="input-wrapper" style="margin-top: 6px;">
+                        <div class="input-icon" style="color: #D97706; font-weight: 800; font-size: 17px;">
+                            ₹
+                        </div>
+                        <input type="number" id="cartValue" class="form-control" placeholder="Enter cart amount (e.g. 100) to check Free Delivery!" min="0" style="border-color: #FCD34D;">
+                    </div>
+                    <div style="font-size: 12px; color: #78350F; margin-top: 6px; font-weight: 600;">
+                        💡 If your current balance + today's cart ≥ ₹500, you unlock VIP Free Delivery instantly!
+                    </div>
+                </div>
 
                 <button type="submit" id="submitBtn" class="submit-btn" aria-label="Add to Group Cart">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -894,6 +978,10 @@
             updatePersonalMeter(e.target.value.trim());
         });
 
+        document.getElementById('cartValue').addEventListener('input', () => {
+            updatePersonalMeter();
+        });
+
         function triggerConfetti() {
             for (let i = 0; i < 40; i++) {
                 const conf = document.createElement('div');
@@ -921,18 +1009,36 @@
         function updatePersonalMeter(mobileInput) {
             const mobile = (mobileInput || document.getElementById('mobile').value).trim();
             const card = document.getElementById('personalMeterCard');
+            const cartGroup = document.getElementById('cartValueGroup');
+
             if (!mobile || mobile.length < 10) {
                 card.style.display = 'none';
+                if (cartGroup) cartGroup.style.display = 'none';
                 return;
             }
 
             const name = window.serverStudentProgress[mobile]?.name || localStorage.getItem('splitit_student_name') || document.getElementById('fullName').value.trim() || 'Student';
             const serverSpend = window.serverStudentProgress[mobile] ? window.serverStudentProgress[mobile].spend : null;
             const localSpend = Number(localStorage.getItem('splitit_spend_' + mobile)) || 0;
-            const spend = serverSpend !== null ? serverSpend : localSpend;
+            const baseSpend = serverSpend !== null ? serverSpend : localSpend;
+
+            // Only show/enable Today's Cart Value live booster if base progress is >= Rs. 350
+            let todayCart = 0;
+            if (baseSpend >= 350) {
+                if (cartGroup) cartGroup.style.display = 'block';
+                todayCart = Number(document.getElementById('cartValue')?.value) || 0;
+            } else {
+                if (cartGroup) {
+                    cartGroup.style.display = 'none';
+                    const cartInput = document.getElementById('cartValue');
+                    if (cartInput) cartInput.value = '';
+                }
+            }
+
+            const totalSpend = baseSpend + todayCart;
 
             card.style.display = 'block';
-            const percentage = Math.round((spend / 500) * 100);
+            const percentage = Math.round((totalSpend / 500) * 100);
             const fill = document.getElementById('meterBarFill');
             const title = document.getElementById('meterTitleText');
             const spendText = document.getElementById('meterSpendText');
@@ -940,31 +1046,37 @@
             const vipBox = document.getElementById('vipBox');
 
             title.textContent = `👋 Welcome back, ${name}! Your Personal SplitIt Meter:`;
-            spendText.textContent = `₹${spend} / ₹500 (${percentage}%)`;
+            if (todayCart > 0) {
+                spendText.textContent = `₹${baseSpend} + ₹${todayCart} today = ₹${totalSpend} / ₹500 (${percentage}%)`;
+            } else {
+                spendText.textContent = `₹${baseSpend} / ₹500 (${percentage}%)`;
+            }
 
-            if (spend >= 500) {
+            if (totalSpend >= 500) {
                 card.classList.add('gold-theme');
                 fill.className = 'meter-bar-fill meter-gold';
                 fill.style.width = '100%';
                 hintText.textContent = '🎉 The Progress Bar turned Gold! GOAL UNLOCKED!';
                 vipBox.style.display = 'block';
                 document.getElementById('submitText').textContent = '🎁 Check out with FREE Delivery via WhatsApp';
-                if (!window.confettiFiredForMobile || window.confettiFiredForMobile !== mobile) {
-                    window.confettiFiredForMobile = mobile;
+                if (!window.confettiFiredForMobile || window.confettiFiredForMobile !== mobile + '_' + (totalSpend >= 500)) {
+                    window.confettiFiredForMobile = mobile + '_' + (totalSpend >= 500);
                     triggerConfetti();
                 }
                 window.isVipFreeDelivery = true;
+                window.claimDetails = `(Current: ₹${baseSpend} + Today's Cart: ₹${todayCart} = ₹${totalSpend})`;
             } else {
                 card.classList.remove('gold-theme');
                 vipBox.style.display = 'none';
                 window.isVipFreeDelivery = false;
+                window.claimDetails = '';
                 if (percentage < 40) {
                     fill.className = 'meter-bar-fill meter-bronze';
                 } else {
                     fill.className = 'meter-bar-fill meter-silver';
                 }
                 fill.style.width = `${Math.min(percentage, 100)}%`;
-                const needed = Math.max(500 - spend, 0);
+                const needed = Math.max(500 - totalSpend, 0);
                 hintText.textContent = `💡 Order just ₹${needed} more today to earn 100% Free Delivery on your order!`;
                 document.getElementById('submitText').textContent = 'Check out via WhatsApp';
             }
@@ -981,6 +1093,10 @@
             const finalLocation = deliveryType === "Hostel" ? hostelVal : "Main Gate";
 
             const cartLink = document.getElementById('cartLink').value.trim();
+            const serverSpend = window.serverStudentProgress[mobile] ? window.serverStudentProgress[mobile].spend : null;
+            const localSpend = Number(localStorage.getItem('splitit_spend_' + mobile)) || 0;
+            const baseSpend = serverSpend !== null ? serverSpend : localSpend;
+            const todayCart = baseSpend >= 350 ? (Number(document.getElementById('cartValue')?.value) || 0) : 0;
             const timestamp = new Date().toISOString();
 
             // Save for future visits
@@ -988,10 +1104,10 @@
             localStorage.setItem('splitit_student_mobile', mobile);
             if (!window.serverStudentProgress[mobile]) {
                 const cur = Number(localStorage.getItem('splitit_spend_' + mobile)) || 0;
-                localStorage.setItem('splitit_spend_' + mobile, cur + 150); // Give instant local progress feedback
+                localStorage.setItem('splitit_spend_' + mobile, cur + (todayCart || 150));
             }
 
-            const orderData = { name, mobile, hostel: finalLocation, cartLink, timestamp };
+            const orderData = { name, mobile, hostel: finalLocation, cartLink, todayCart, timestamp };
 
             setButtonLoading(true);
             showToast("Adding item to cart...", 2000);
@@ -1014,7 +1130,7 @@
                     `%F0%9F%9B%8D%EF%B8%8F *Cart Link:*%0A${encodeURIComponent(cartLink)}%0A%0A`;
 
                 if (window.isVipFreeDelivery) {
-                    whatsappText += `%F0%9F%8F%86 *SPECIAL REWARD:* Cart > %E2%82%B9500 (FREE DELIVERY APPLIED)%0A%0A`;
+                    whatsappText += `%F0%9F%8F%86 *SPECIAL REWARD:* Cart > %E2%82%B9500 (FREE DELIVERY APPLIED) ${encodeURIComponent(window.claimDetails || '')}%0A%0A`;
                 }
 
                 whatsappText += `%E2%9A%A1 _Sent via SplitIt_`;
@@ -1038,7 +1154,7 @@
                     `%F0%9F%9B%8D%EF%B8%8F *Cart Link:*%0A${encodeURIComponent(cartLink)}%0A%0A`;
 
                 if (window.isVipFreeDelivery) {
-                    whatsappText += `%F0%9F%8F%86 *SPECIAL REWARD:* Cart > %E2%82%B9500 (FREE DELIVERY APPLIED)%0A%0A`;
+                    whatsappText += `%F0%9F%8F%86 *SPECIAL REWARD:* Cart > %E2%82%B9500 (FREE DELIVERY APPLIED) ${encodeURIComponent(window.claimDetails || '')}%0A%0A`;
                 }
 
                 whatsappText += `%E2%9A%A1 _Sent via SplitIt_`;
