@@ -126,7 +126,9 @@
 
         <div class="form-group">
             <label>Student Mobile Number (10 Digits)</label>
-            <input type="tel" id="studentMobile" placeholder="e.g. 9876543210" maxlength="10">
+            <input type="tel" id="studentMobile" placeholder="e.g. 9876543210" maxlength="10" list="activeMobilesList" oninput="onStudentMobileInput()">
+            <datalist id="activeMobilesList"></datalist>
+            <div id="studentRecommendation" style="display: none; margin-top: 8px; padding: 10px 12px; background: #ECFDF5; border: 1px solid #10B981; border-radius: 8px; font-size: 13px; color: #065F46;"></div>
         </div>
 
         <div class="form-group">
@@ -176,6 +178,9 @@
 
         function renderStudentsList() {
             const container = document.getElementById('studentsList');
+            const datalist = document.getElementById('activeMobilesList');
+            if(datalist) datalist.innerHTML = '';
+
             container.innerHTML = '<label style="display:block; margin-bottom: 8px;">Active Student Meters</label>';
             const keys = Object.keys(currentStudentProgress);
             if(keys.length === 0) {
@@ -184,6 +189,9 @@
             }
             keys.forEach(mobile => {
                 const item = currentStudentProgress[mobile];
+                if(datalist) {
+                    datalist.innerHTML += `<option value="${mobile}">${item.name || 'Student'} — ₹${item.spend}</option>`;
+                }
                 container.innerHTML += `
                     <div class="student-item">
                         <div>
@@ -194,6 +202,35 @@
                     </div>
                 `;
             });
+            onStudentMobileInput();
+        }
+
+        function onStudentMobileInput() {
+            const mobile = document.getElementById('studentMobile')?.value.trim();
+            const recBox = document.getElementById('studentRecommendation');
+            const nameInput = document.getElementById('studentName');
+
+            if (mobile && currentStudentProgress[mobile]) {
+                const existing = currentStudentProgress[mobile];
+                if (recBox) {
+                    recBox.style.display = 'block';
+                    recBox.innerHTML = `💡 <strong>Found Active Record:</strong> ${existing.name || 'Student'} | Current Verified Spend: <strong style="color:#15803D;">₹${existing.spend} / ₹500</strong> <button type="button" onclick="useExistingDetails('${mobile}')" style="margin-left: 8px; padding: 3px 10px; font-size: 11.5px; font-weight: 800; background: #10B981; color: white; border: none; border-radius: 6px; cursor: pointer;">Fill Existing Data</button>`;
+                }
+                if (nameInput && nameInput.value.trim() === '' && existing.name && existing.name !== 'Student') {
+                    nameInput.value = existing.name;
+                }
+            } else {
+                if (recBox) recBox.style.display = 'none';
+            }
+        }
+
+        function useExistingDetails(mobile) {
+            if (currentStudentProgress[mobile]) {
+                const existing = currentStudentProgress[mobile];
+                document.getElementById('studentName').value = existing.name !== 'Student' ? (existing.name || '') : '';
+                document.getElementById('studentSpend').value = existing.spend || '';
+                document.getElementById('studentSpend').focus();
+            }
         }
 
         async function saveTimer() {
@@ -248,10 +285,18 @@
                 return;
             }
 
-            currentStudentProgress[mobile] = { name: name || 'Student', spend: spend, updated: Date.now() };
+            let finalName = name;
+            if (!finalName && currentStudentProgress[mobile]?.name) {
+                finalName = currentStudentProgress[mobile].name;
+            }
+            if (!finalName) finalName = 'Student';
+
+            currentStudentProgress[mobile] = { name: finalName, spend: spend, updated: Date.now() };
             document.getElementById('studentMobile').value = '';
             document.getElementById('studentName').value = '';
             document.getElementById('studentSpend').value = '';
+            const recBox = document.getElementById('studentRecommendation');
+            if (recBox) recBox.style.display = 'none';
             renderStudentsList();
             await saveTimer();
         }
