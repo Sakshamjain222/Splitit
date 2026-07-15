@@ -122,7 +122,7 @@
         <div class="divider"></div>
 
         <h2>Set Student Progress 🎯</h2>
-        <p>Verified cart amount set here controls each student's personal meter on index.html.</p>
+        <p>Verified cart amount set here controls each student's personal meter</p>
 
         <div class="form-group">
             <label>Student Mobile Number (10 Digits)</label>
@@ -142,7 +142,6 @@
         </div>
 
         <button class="btn-secondary" onclick="saveStudentProgress()">Save Student Meter</button>
-        <button class="btn-danger" onclick="resetAllStudents()">🔄 Reset All Student Meters to ₹0</button>
 
         <div id="studentsList" style="margin-top: 20px;"></div>
     </div>
@@ -198,7 +197,10 @@
                             <strong>${item.name || 'Student'} (${mobile})</strong><br>
                             <span style="color:#15803D; font-weight:800;">₹${item.spend} / ₹500</span>
                         </div>
-                        <button style="width:auto; padding:6px 12px; margin:0; background:#DC2626; font-size:12px;" onclick="removeStudent('${mobile}')">Remove</button>
+                        <div style="display: flex; gap: 6px;">
+                            <button style="width:auto; padding:6px 12px; margin:0; background:#2563EB; font-size:12px;" onclick="editStudent('${mobile}')">Edit</button>
+                            <button style="width:auto; padding:6px 12px; margin:0; background:#DC2626; font-size:12px;" onclick="removeStudent('${mobile}')">Remove</button>
+                        </div>
                     </div>
                 `;
             });
@@ -301,18 +303,25 @@
             await saveTimer();
         }
 
+        function editStudent(mobile) {
+            if (currentStudentProgress[mobile]) {
+                const existing = currentStudentProgress[mobile];
+                document.getElementById('studentMobile').value = mobile;
+                document.getElementById('studentName').value = existing.name !== 'Student' ? (existing.name || '') : '';
+                document.getElementById('studentSpend').value = existing.spend || '';
+                onStudentMobileInput();
+                const spendInput = document.getElementById('studentSpend');
+                if (spendInput) {
+                    spendInput.focus();
+                    spendInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+
         async function removeStudent(mobile) {
             delete currentStudentProgress[mobile];
             renderStudentsList();
             await saveTimer();
-        }
-
-        async function resetAllStudents() {
-            if(confirm("Are you sure you want to reset all individual student meters to ₹0?")) {
-                currentStudentProgress = {};
-                renderStudentsList();
-                await saveTimer();
-            }
         }
     </script>
 </body>
