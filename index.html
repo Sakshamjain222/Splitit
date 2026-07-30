@@ -1019,8 +1019,7 @@
 
             const name = window.serverStudentProgress[mobile]?.name || localStorage.getItem('splitit_student_name') || document.getElementById('fullName').value.trim() || 'Student';
             const serverSpend = window.serverStudentProgress[mobile] ? window.serverStudentProgress[mobile].spend : null;
-            const localSpend = Number(localStorage.getItem('splitit_spend_' + mobile)) || 0;
-            const baseSpend = serverSpend !== null ? serverSpend : localSpend;
+            const baseSpend = serverSpend !== null ? serverSpend : 0;
 
             // Only show/enable Today's Cart Value live booster if base progress is >= Rs. 350
             let todayCart = 0;
@@ -1094,18 +1093,13 @@
 
             const cartLink = document.getElementById('cartLink').value.trim();
             const serverSpend = window.serverStudentProgress[mobile] ? window.serverStudentProgress[mobile].spend : null;
-            const localSpend = Number(localStorage.getItem('splitit_spend_' + mobile)) || 0;
-            const baseSpend = serverSpend !== null ? serverSpend : localSpend;
+            const baseSpend = serverSpend !== null ? serverSpend : 0;
             const todayCart = baseSpend >= 350 ? (Number(document.getElementById('cartValue')?.value) || 0) : 0;
             const timestamp = new Date().toISOString();
 
             // Save for future visits
             localStorage.setItem('splitit_student_name', name);
             localStorage.setItem('splitit_student_mobile', mobile);
-            if (!window.serverStudentProgress[mobile]) {
-                const cur = Number(localStorage.getItem('splitit_spend_' + mobile)) || 0;
-                localStorage.setItem('splitit_spend_' + mobile, cur + (todayCart || 150));
-            }
 
             const orderData = { name, mobile, hostel: finalLocation, cartLink, todayCart, timestamp };
 
