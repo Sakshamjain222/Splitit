@@ -71,6 +71,11 @@
         #statusMsg { margin-top: 16px; font-weight: 800; color: #15803D; display: none; }
         .divider { height: 2px; background: #E5E7EB; margin: 28px 0; }
         .student-item { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; background: #F9FAFB; padding: 10px 14px; border-radius: 10px; margin-bottom: 8px; border: 1px solid #E5E7EB; font-size: 14px; text-align: left; }
+        
+        #studentsList::-webkit-scrollbar { width: 6px; }
+        #studentsList::-webkit-scrollbar-track { background: #F3F4F6; border-radius: 10px; }
+        #studentsList::-webkit-scrollbar-thumb { background: #D1D5DB; border-radius: 10px; }
+        #studentsList::-webkit-scrollbar-thumb:hover { background: #9CA3AF; }
 
         @media (max-width: 480px) {
             body { padding: 12px; }
@@ -143,7 +148,7 @@
 
         <button class="btn-secondary" onclick="saveStudentProgress()">Save Student Meter</button>
 
-        <div id="studentsList" style="margin-top: 20px;"></div>
+        <div id="studentsList" style="margin-top: 20px; max-height: 380px; overflow-y: auto; padding-right: 8px; border-top: 1px solid #E5E7EB; padding-top: 16px;"></div>
     </div>
 
     <script>
