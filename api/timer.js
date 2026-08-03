@@ -60,7 +60,7 @@ module.exports = async function handler(req, res) {
         return res.status(200).json(data);
     }
 
-    // Handle POST Request (Update Timer or Student Progress from aadmi.html)
+    // Handle POST Request (Update Timer or Student Progress from admin.html)
     if (req.method === 'POST') {
         const providedPassword = req.headers['authorization'];
         
